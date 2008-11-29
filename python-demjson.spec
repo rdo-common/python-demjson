@@ -2,7 +2,7 @@
 
 Name:           python-demjson
 Version:        1.3
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python JSON module and lint checker
 
 Group:          Development/Languages
@@ -71,6 +71,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Sat Nov 29 2008 Ignacio Vazquez-Abrams <ivazqueznet+rpm@gmail.com> - 1.3-3
+- Rebuild for Python 2.6
+
 * Mon Mar 31 2008 Thomas Moschny <thomas.moschny@gmx.de> - 1.3-2
 - Cleanup BuildRequires.
 - Don't pack INSTALL.txt.
