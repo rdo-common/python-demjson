@@ -2,7 +2,7 @@
 
 Name:           python-demjson
 Version:        1.3
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        Python JSON module and lint checker
 
 Group:          Development/Languages
@@ -71,6 +71,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Sun Jul 26 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.3-5
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_12_Mass_Rebuild
+
 * Thu Feb 26 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.3-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_11_Mass_Rebuild
 
