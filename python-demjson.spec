@@ -1,14 +1,15 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           python-demjson
-Version:        1.3
-Release:        6%{?dist}
+Version:        1.4
+Release:        1%{?dist}
 Summary:        Python JSON module and lint checker
 
 Group:          Development/Languages
-License:        GPLv3+
+License:        LGPLv3+
 URL:            http://deron.meranda.us/python/demjson/
 Source0:        http://deron.meranda.us/python/demjson/dist/demjson-%{version}.tar.gz
+Patch0:         demjson-1.4-0xFF-bug.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 BuildRequires:  python-devel
@@ -32,6 +33,7 @@ text for strict compliance to the standard.
 
 %prep
 %setup -q -n demjson-%{version}
+%patch0 -p1 -b.0xFF
 
 
 %build
@@ -71,6 +73,10 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Wed Oct 27 2010 Thomas Moschny <thomas.moschny@gmx.de> - 1.4-1
+- Update to 1.4. Upstream changed license to LGPLv3+.
+- Apply a one-liner patch provided upstream.
+
 * Thu Jul 22 2010 David Malcolm <dmalcolm@redhat.com> - 1.3-6
 - Rebuilt for https://fedoraproject.org/wiki/Features/Python_2.7/MassRebuild
 

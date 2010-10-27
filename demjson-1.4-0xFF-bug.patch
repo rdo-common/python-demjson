@@ -1,0 +1,12 @@
+diff -up demjson-1.4/demjson.py.orig demjson-1.4/demjson.py
+--- demjson-1.4/demjson.py.orig	2008-12-17 07:08:20.000000000 +0100
++++ demjson-1.4/demjson.py	2009-12-22 12:02:48.000000000 +0100
+@@ -907,7 +907,7 @@ class JSON(object):
+         # need to be escaped.
+ 
+         self._asciiencodable = [32 <= c < 128 and not self._rev_escapes.has_key(chr(c))
+-                              for c in range(0,255)]
++                              for c in range(0,256)]
+ 
+     def _set_strictness(self, strict):
+         """Changes the strictness behavior.
