@@ -2,7 +2,7 @@
 
 Name:           python-demjson
 Version:        1.5
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python JSON module and lint checker
 
 Group:          Development/Languages
@@ -71,6 +71,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Tue Feb 08 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.5-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
+
 * Wed Oct 27 2010 Thomas Moschny <thomas.moschny@gmx.de> - 1.5-1
 - Update to 1.5.
 - Remove patch no longer needed.
