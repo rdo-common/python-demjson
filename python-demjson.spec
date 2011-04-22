@@ -1,8 +1,8 @@
 %{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           python-demjson
-Version:        1.5
-Release:        2%{?dist}
+Version:        1.6
+Release:        1%{?dist}
 Summary:        Python JSON module and lint checker
 
 Group:          Development/Languages
@@ -35,19 +35,19 @@ text for strict compliance to the standard.
 
 
 %build
-%if 0%{?fedora} > 8
-%{__python} setup.py build
-%else
+%if 0%{?rhel} && 0%{?rhel} < 6
 %{__python} -c 'import setuptools; execfile("setup.py")' build
+%else
+%{__python} setup.py build
 %endif
 
 
 %install
 rm -rf %{buildroot}
-%if 0%{?fedora} > 8
-%{__python} setup.py install -O1 --skip-build --root %{buildroot}
-%else
+%if 0%{?rhel} && 0%{?rhel} < 6
 %{__python} -c 'import setuptools; execfile("setup.py")' install -O1 --skip-build --root %{buildroot}
+%else
+%{__python} setup.py install -O1 --skip-build --root %{buildroot}
 %endif
 %{__install} -m 0755 -D -p jsonlint %{buildroot}%{_bindir}/jsonlint
 
@@ -71,6 +71,10 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Mon Apr  4 2011 Thomas Moschny <thomas.moschny@gmx.de> - 1.6-1
+- Update to 1.6.
+- Injecting setuptools is only needed for EPEL5.
+
 * Tue Feb 08 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.5-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
 
