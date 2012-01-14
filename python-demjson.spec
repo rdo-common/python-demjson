@@ -2,7 +2,7 @@
 
 Name:           python-demjson
 Version:        1.6
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python JSON module and lint checker
 
 Group:          Development/Languages
@@ -71,6 +71,9 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Sat Jan 14 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.6-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
+
 * Mon Apr  4 2011 Thomas Moschny <thomas.moschny@gmx.de> - 1.6-1
 - Update to 1.6.
 - Injecting setuptools is only needed for EPEL5.
