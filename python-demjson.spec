@@ -7,7 +7,7 @@
 
 Name:           python-demjson
 Version:        2.2.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python JSON module and lint checker
 Group:          Development/Languages
 License:        LGPLv3+
@@ -127,6 +127,9 @@ popd
 
 
 %changelog
+* Thu Jun 18 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.2.2-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
+
 * Wed Jun 25 2014 Thomas Moschny <thomas.moschny@gmx.de> - 2.2.2-1
 - Update to 2.2.2.
 - Provide python3 subpackage.
