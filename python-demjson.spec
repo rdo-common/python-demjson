@@ -1,20 +1,24 @@
-%{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
+%if 0%{?rhel} && 0%{?rhel} <= 6
+%{!?__python2: %global __python2 /usr/bin/python2}
+%{!?python2_sitelib: %global python2_sitelib %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
+%endif
 
 %if 0%{?fedora}
 %global with_python3 1
-%{!?python3_version: %global python3_version %(%{__python3} -c "import sys; sys.stdout.write(sys.version[:3])")}
 %endif
 
-Name:           python-demjson
-Version:        2.2.2
-Release:        2%{?dist}
+%global srcname demjson
+
+Name:           python-%{srcname}
+Version:        2.2.3
+Release:        1%{?dist}
 Summary:        Python JSON module and lint checker
 Group:          Development/Languages
 License:        LGPLv3+
-URL:            http://deron.meranda.us/python/demjson/
-Source0:        http://deron.meranda.us/python/demjson/dist/demjson-%{version}.tar.gz
+URL:            http://deron.meranda.us/python/%{srcname}/
+Source0:        http://deron.meranda.us/python/%{srcname}/dist/%{srcname}-%{version}.tar.gz
 BuildArch:      noarch
-BuildRequires:  python-devel
+BuildRequires:  python2-devel
 BuildRequires:  python-setuptools
 %if 0%{?with_python3}
 BuildRequires:  python3-devel
@@ -34,11 +38,11 @@ to make it easier to read.
 
 
 %if 0%{?with_python3}
-%package -n python3-demjson
+%package -n python3-%{srcname}
 Summary:        Python JSON module and lint checker
 Group:          Development/Languages
 
-%description -n python3-demjson
+%description -n python3-%{srcname}
 The demjson package is a comprehensive Python language library to read
 and write JSON; the popular language-independent data format standard.
 
@@ -50,35 +54,40 @@ to make it easier to read.
 
 
 %prep
-%setup -q -n demjson-%{version}
+%setup -qc -n %{srcname}-%{version}
+mv %{srcname}-%{version} python2
 
 %if 0%{?with_python3}
-cp -a . %{py3dir}
+cp -a python2 python3
 %endif # with_python3
 
 
 %build
-%{__python} setup.py build
+pushd python2
+%{__python2} setup.py build
+popd
 
 %if 0%{?with_python3}
-pushd %{py3dir}
+pushd python3
 %{__python3} setup.py build
 popd
 %endif # with_python3
 
 
 %install
-%{__python} setup.py install -O1 --skip-build --root %{buildroot}
+pushd python2
+%{__python2} setup.py install -O1 --skip-build --root %{buildroot}
 
 # fix shebang lines
-find %{buildroot}%{python_sitelib} -name '*.py' -exec \
+find %{buildroot}%{python2_sitelib} -name '*.py' -exec \
      sed -i "1{/^#!/d}" {} \;
 
 # rename binary
-mv %{buildroot}%{_bindir}/jsonlint{,-%{python_version}}
+mv %{buildroot}%{_bindir}/jsonlint{,-%{python2_version}}
+popd
 
 %if 0%{?with_python3}
-pushd %{py3dir}
+pushd python3
 %{__python3} setup.py install -O1 --skip-build --root %{buildroot}
 
 # fix shebang lines
@@ -91,17 +100,17 @@ popd
 %endif # with_python3
 
 # 2.X binary is called by default for now
-ln -s jsonlint-%{python_version} %{buildroot}%{_bindir}/jsonlint
+ln -s jsonlint-%{python2_version} %{buildroot}%{_bindir}/jsonlint
 
 
 %check
-cd test
-PYTHONPATH=%{buildroot}%{python_sitelib} \
-%{__python} test_demjson.py
+pushd python2/test
+PYTHONPATH=%{buildroot}%{python2_sitelib} \
+%{__python2} test_demjson.py
+popd
 
 %if 0%{?with_python3}
-pushd %{py3dir}
-cd test
+pushd python3/test
 2to3 -w --no-diffs test_demjson.py
 PYTHONPATH=%{buildroot}%{python3_sitelib} \
 %{__python3} test_demjson.py
@@ -110,23 +119,40 @@ popd
 
 
 %files
-%doc README.txt README.md LICENSE.txt
-%doc docs
-%{python_sitelib}/*
+%doc python2/README.txt
+%doc python2/README.md
+%doc python2/docs
+%if 0%{?_licensedir:1}
+%license python2/LICENSE.txt
+%else
+%doc python2/LICENSE.txt
+%endif # licensedir
+%{python2_sitelib}/*
 %{_bindir}/jsonlint
-%{_bindir}/jsonlint-%{python_version}
+%{_bindir}/jsonlint-%{python2_version}
 
 
 %if 0%{?with_python3}
-%files -n python3-demjson
-%doc README.txt README.md LICENSE.txt
-%doc docs
+%files -n python3-%{srcname}
+%doc python3/README.txt
+%doc python3/README.md
+%doc python3/docs
+%if 0%{?_licensedir:1}
+%license python3/LICENSE.txt
+%else
+%doc python3/LICENSE.txt
+%endif # licensedir
 %{python3_sitelib}/*
 %{_bindir}/jsonlint-%{python3_version}
 %endif # with_python3
 
 
 %changelog
+* Fri Jun 19 2015 Thomas Moschny <thomas.moschny@gmx.de> - 2.2.3-1
+- Update to 2.2.3.
+- Apply updated Python packaging guidelines.
+- Mark LICENSE.txt with %%license.
+
 * Thu Jun 18 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.2.2-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
 
