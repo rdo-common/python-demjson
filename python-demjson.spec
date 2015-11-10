@@ -11,7 +11,7 @@
 
 Name:           python-%{srcname}
 Version:        2.2.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Python JSON module and lint checker
 Group:          Development/Languages
 License:        LGPLv3+
@@ -148,6 +148,9 @@ popd
 
 
 %changelog
+* Tue Nov 10 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.2.3-2
+- Rebuilt for https://fedoraproject.org/wiki/Changes/python3.5
+
 * Fri Jun 19 2015 Thomas Moschny <thomas.moschny@gmx.de> - 2.2.3-1
 - Update to 2.2.3.
 - Apply updated Python packaging guidelines.
