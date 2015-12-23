@@ -1,17 +1,8 @@
-%if 0%{?rhel} && 0%{?rhel} <= 6
-%{!?__python2: %global __python2 /usr/bin/python2}
-%{!?python2_sitelib: %global python2_sitelib %(%{__python2} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
-%endif
-
-%if 0%{?fedora}
-%global with_python3 1
-%endif
-
 %global srcname demjson
 
 Name:           python-%{srcname}
-Version:        2.2.3
-Release:        2%{?dist}
+Version:        2.2.4
+Release:        1%{?dist}
 Summary:        Python JSON module and lint checker
 Group:          Development/Languages
 License:        LGPLv3+
@@ -19,85 +10,76 @@ URL:            http://deron.meranda.us/python/%{srcname}/
 Source0:        http://deron.meranda.us/python/%{srcname}/dist/%{srcname}-%{version}.tar.gz
 BuildArch:      noarch
 BuildRequires:  python2-devel
-BuildRequires:  python-setuptools
-%if 0%{?with_python3}
 BuildRequires:  python3-devel
+BuildRequires:  python-setuptools
 BuildRequires:  python3-setuptools
 # needed for 2to3
 BuildRequires:  python-tools
-%endif # with_python3
 
-%description 
-The demjson package is a comprehensive Python language library to read
-and write JSON; the popular language-independent data format standard.
-
-It includes a command tool, jsonlint, that allows you to easily check
-and validate any JSON document, and spot any potential data
-portability issues. It can also reformat and re-indent a JSON document
+%global base_description The demjson package is a comprehensive Python language library to read\
+and write JSON; the popular language-independent data format standard.\
+\
+It includes a command tool, jsonlint, that allows you to easily check\
+and validate any JSON document, and spot any potential data\
+portability issues. It can also reformat and re-indent a JSON document\
 to make it easier to read.
 
+%description
+%{base_description}
 
-%if 0%{?with_python3}
+
+%package -n python2-%{srcname}
+Summary:        Python JSON module and lint checker
+%{?python_provide:%python_provide python2-%{srcname}}
+
+%description -n python2-%{srcname}
+%{base_description}
+
+
 %package -n python3-%{srcname}
 Summary:        Python JSON module and lint checker
-Group:          Development/Languages
+%{?python_provide:%python_provide python3-%{srcname}}
 
 %description -n python3-%{srcname}
-The demjson package is a comprehensive Python language library to read
-and write JSON; the popular language-independent data format standard.
-
-It includes a command tool, jsonlint, that allows you to easily check
-and validate any JSON document, and spot any potential data
-portability issues. It can also reformat and re-indent a JSON document
-to make it easier to read.
-%endif # with_python3
+%{base_description}
 
 
 %prep
-%setup -qc -n %{srcname}-%{version}
+%autosetup -c -n %{srcname}-%{version}
 mv %{srcname}-%{version} python2
-
-%if 0%{?with_python3}
 cp -a python2 python3
-%endif # with_python3
 
 
 %build
 pushd python2
-%{__python2} setup.py build
+%py2_build
 popd
 
-%if 0%{?with_python3}
 pushd python3
-%{__python3} setup.py build
+%py3_build
 popd
-%endif # with_python3
 
 
 %install
 pushd python2
-%{__python2} setup.py install -O1 --skip-build --root %{buildroot}
-
-# fix shebang lines
-find %{buildroot}%{python2_sitelib} -name '*.py' -exec \
-     sed -i "1{/^#!/d}" {} \;
-
-# rename binary
-mv %{buildroot}%{_bindir}/jsonlint{,-%{python2_version}}
+%py2_install
+mv %{buildroot}%{_bindir}/jsonlint %{buildroot}%{_bindir}/jsonlint-%{python2_version}
+ln -s jsonlint-%{python2_version} %{buildroot}%{_bindir}/jsonlint-2
 popd
 
-%if 0%{?with_python3}
 pushd python3
-%{__python3} setup.py install -O1 --skip-build --root %{buildroot}
+%py3_install
+mv %{buildroot}%{_bindir}/jsonlint %{buildroot}%{_bindir}/jsonlint-%{python3_version}
+ln -s jsonlint-%{python3_version} %{buildroot}%{_bindir}/jsonlint-3
+popd
 
 # fix shebang lines
-find %{buildroot}%{python3_sitelib} -name '*.py' -exec \
+find %{buildroot}%{python2_sitelib} \
+     %{buildroot}%{python3_sitelib} \
+     -name '*.py' -exec \
      sed -i "1{/^#!/d}" {} \;
 
-# rename binary
-mv %{buildroot}%{_bindir}/jsonlint{,-%{python3_version}}
-popd
-%endif # with_python3
+find %{buildroot}%{_bindir} -ls
 
 # 2.X binary is called by default for now
 ln -s jsonlint-%{python2_version} %{buildroot}%{_bindir}/jsonlint
@@ -109,45 +91,39 @@ PYTHONPATH=%{buildroot}%{python2_sitelib} \
 %{__python2} test_demjson.py
 popd
 
-%if 0%{?with_python3}
 pushd python3/test
 2to3 -w --no-diffs test_demjson.py
 PYTHONPATH=%{buildroot}%{python3_sitelib} \
 %{__python3} test_demjson.py
 popd
-%endif # with_python3
 
 
-%files
+%files -n python2-%{srcname}
 %doc python2/README.txt
 %doc python2/README.md
 %doc python2/docs
-%if 0%{?_licensedir:1}
 %license python2/LICENSE.txt
-%else
-%doc python2/LICENSE.txt
-%endif # licensedir
 %{python2_sitelib}/*
 %{_bindir}/jsonlint
+%{_bindir}/jsonlint-2
 %{_bindir}/jsonlint-%{python2_version}
 
 
-%if 0%{?with_python3}
 %files -n python3-%{srcname}
 %doc python3/README.txt
 %doc python3/README.md
 %doc python3/docs
-%if 0%{?_licensedir:1}
 %license python3/LICENSE.txt
-%else
-%doc python3/LICENSE.txt
-%endif # licensedir
 %{python3_sitelib}/*
+%{_bindir}/jsonlint-3
 %{_bindir}/jsonlint-%{python3_version}
-%endif # with_python3
 
 
 %changelog
+* Wed Dec 23 2015 Thomas Moschny <thomas.moschny@gmx.de> - 2.2.4-1
+- Update to 2.2.4.
+- Follow updated Python packaging guidelines.
+
 * Tue Nov 10 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.2.3-2
 - Rebuilt for https://fedoraproject.org/wiki/Changes/python3.5
 
