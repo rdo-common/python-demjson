@@ -2,7 +2,7 @@
 
 Name:           python-%{srcname}
 Version:        2.2.4
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python JSON module and lint checker
 Group:          Development/Languages
 License:        LGPLv3+
@@ -120,6 +120,9 @@ popd
 
 
 %changelog
+* Tue Jul 19 2016 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.2.4-3
+- https://fedoraproject.org/wiki/Changes/Automatic_Provides_for_Python_RPM_Packages
+
 * Thu Feb 04 2016 Fedora Release Engineering <releng@fedoraproject.org> - 2.2.4-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
 
