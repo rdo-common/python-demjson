@@ -1,3 +1,7 @@
+%if 0%{?fedora}
+%global with_python3}
+%endif
+
 %global srcname demjson
 
 Name:           python-%{srcname}
@@ -9,12 +13,6 @@ License:        LGPLv3+
 URL:            http://deron.meranda.us/python/%{srcname}/
 Source0:        http://deron.meranda.us/python/%{srcname}/dist/%{srcname}-%{version}.tar.gz
 BuildArch:      noarch
-BuildRequires:  python2-devel
-BuildRequires:  python3-devel
-BuildRequires:  python-setuptools
-BuildRequires:  python3-setuptools
-# needed for 2to3
-BuildRequires:  python-tools
 
 %global base_description The demjson package is a comprehensive Python language library to read\
 and write JSON; the popular language-independent data format standard.\
@@ -31,23 +29,32 @@ to make it easier to read.
 %package -n python2-%{srcname}
 Summary:        Python JSON module and lint checker
 %{?python_provide:%python_provide python2-%{srcname}}
+BuildRequires:  python2-devel
+BuildRequires:  python-setuptools
 
 %description -n python2-%{srcname}
 %{base_description}
 
-
+%if 0%{?with_python3}
 %package -n python3-%{srcname}
 Summary:        Python JSON module and lint checker
 %{?python_provide:%python_provide python3-%{srcname}}
+BuildRequires:  python3-devel
+BuildRequires:  python3-setuptools
+# needed for 2to3
+BuildRequires:  python-tools
 
 %description -n python3-%{srcname}
 %{base_description}
+%endif
 
 
 %prep
 %autosetup -c -n %{srcname}-%{version}
 mv %{srcname}-%{version} python2
+%if 0%{?with_python3}
 cp -a python2 python3
+%endif
 
 
 %build
@@ -55,9 +62,11 @@ pushd python2
 %py2_build
 popd
 
+%if 0%{?with_python3}
 pushd python3
 %py3_build
 popd
+%endif
 
 
 %install
@@ -67,15 +76,19 @@ mv %{buildroot}%{_bindir}/jsonlint %{buildroot}%{_bindir}/jsonlint-%{python2_ver
 ln -s jsonlint-%{python2_version} %{buildroot}%{_bindir}/jsonlint-2
 popd
 
+%if 0%{?with_python3}
 pushd python3
 %py3_install
 mv %{buildroot}%{_bindir}/jsonlint %{buildroot}%{_bindir}/jsonlint-%{python3_version}
 ln -s jsonlint-%{python3_version} %{buildroot}%{_bindir}/jsonlint-3
 popd
+%endif
 
 # fix shebang lines
 find %{buildroot}%{python2_sitelib} \
+%if 0%{?with_python3}
      %{buildroot}%{python3_sitelib} \
+%endif
      -name '*.py' -exec \
      sed -i "1{/^#!/d}" {} \;
 
@@ -91,11 +104,13 @@ PYTHONPATH=%{buildroot}%{python2_sitelib} \
 %{__python2} test_demjson.py
 popd
 
+%if 0%{?with_python3}
 pushd python3/test
 2to3 -w --no-diffs test_demjson.py
 PYTHONPATH=%{buildroot}%{python3_sitelib} \
 %{__python3} test_demjson.py
 popd
+%endif
 
 
 %files -n python2-%{srcname}
@@ -109,6 +124,7 @@ popd
 %{_bindir}/jsonlint-%{python2_version}
 
 
+%if 0%{?with_python3}
 %files -n python3-%{srcname}
 %doc python3/README.txt
 %doc python3/README.md
@@ -117,6 +133,7 @@ popd
 %{python3_sitelib}/*
 %{_bindir}/jsonlint-3
 %{_bindir}/jsonlint-%{python3_version}
+%endif
 
 
 %changelog
